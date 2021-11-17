@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/HRNYC39-SDC-Onyx/SDC-QA#readme",
   "dependencies": {
+    "csv": "^6.0.1",
     "express": "^4.17.1",
     "fast-csv": "^4.3.6",
     "pg": "^8.7.1"
