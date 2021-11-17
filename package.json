@@ -1,0 +1,19 @@
+{
+  "name": "sdc-qa",
+  "version": "1.0.0",
+  "description": "questions and answers",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HRNYC39-SDC-Onyx/SDC-QA.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HRNYC39-SDC-Onyx/SDC-QA/issues"
+  },
+  "homepage": "https://github.com/HRNYC39-SDC-Onyx/SDC-QA#readme"
+}
