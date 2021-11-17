@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/HRNYC39-SDC-Onyx/SDC-QA/issues"
   },
-  "homepage": "https://github.com/HRNYC39-SDC-Onyx/SDC-QA#readme"
+  "homepage": "https://github.com/HRNYC39-SDC-Onyx/SDC-QA#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^8.7.1"
+  }
 }
