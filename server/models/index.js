@@ -1,6 +1,10 @@
 const pool = require('../db/index');
 
-// questions
+/*
+
+  questions table queries
+
+*/
 const getTenQuestions = `SELECT * FROM questions LIMIT 10`;
 
 const productQuestions = ({ product_id, page = 1, count = 5 }) => {
@@ -16,8 +20,23 @@ const test = pool.query(getTenQuestions);
 
 // test.then((data) => console.log('data here 🎃', data.rows));
 
-// answers
+/*
+
+  answers table queries
+
+*/
+
 const getTenAnswers = `SELECT * FROM answers LIMIT 10`;
+
+const productQuestionAnswers = ({ question_id, page = 1, count = 5 }) => {
+  console.log(question_id);
+  let query = {
+    name: 'get-question-answers',
+    text: `SELECT * FROM answers WHERE question_id=$1`,
+    values: [question_id],
+  };
+  return pool.query(query);
+};
 
 const test2 = pool.query(getTenAnswers);
 
@@ -27,6 +46,15 @@ const test2 = pool.query(getTenAnswers);
 const getTenPhotos = `SELECT * FROM answers_photos LIMIT 10`;
 
 const test3 = pool.query(getTenPhotos);
+
+const productQuestionAnswersPhotos = (answer_id) => {
+  let query = {
+    name: 'get-question-answers_photos',
+    text: `SELECT * FROM answers_photos WHERE answer_id=$1`,
+    values: [answer_id],
+  };
+  return pool.query(query);
+};
 
 // test3.then((data) => console.log('photos ⛽️', data.rows));
 
@@ -58,4 +86,9 @@ const test3 = pool.query(getTenPhotos);
 //   }
 // ); */
 
-module.exports = { test, productQuestions };
+module.exports = {
+  test,
+  productQuestions,
+  productQuestionAnswers,
+  productQuestionAnswersPhotos,
+};

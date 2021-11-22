@@ -1,28 +1,21 @@
 const express = require('express');
-const { test, productQuestions } = require('./models/index');
+const {
+  test,
+  productQuestions,
+  productQuestionAnswers,
+  productQuestionAnswersPhotos,
+} = require('./models/index');
 
 const app = express();
 const port = 5001;
 
 app.get('/', (req, res) => {
-  // console.log('tessttttt', test);
-  console.log('params', req.query);
-  productQuestions(req.query).then((data) => console.log(data.rows));
   res.send('hello');
-  // test
-  //   .then((data) => {
-  //     res.send(data.rows);
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
 });
 
 // questions
 app.get('/qa/questions', (req, res) => {
-  res.send('hello!');
-  req.query;
-  res.sendStatus(200);
+  productQuestions(req.query).then((data) => res.send(data.rows));
 });
 
 app.post('/qa/questions', (req, res) => {
@@ -31,7 +24,23 @@ app.post('/qa/questions', (req, res) => {
 
 // answers
 app.get('/qa/questions/:question_id/answers', (req, res) => {
-  res.sendStatus(200);
+  let responseData = {};
+  productQuestionAnswers(req.params)
+    .then((answers) => {
+      responseData.answers = answers.rows;
+    })
+    .then(() => {
+      Promise.all(
+        responseData.answers.map((answer, idx) => {
+          return productQuestionAnswersPhotos(answer.id).then((photos) => {
+            responseData.answers[idx].photos = photos.rows;
+          });
+        })
+      ).then(() => {
+        console.log('promise all console log', responseData);
+        res.send(responseData);
+      });
+    });
 });
 
 app.post('/qa/questions/:question_id/answers', (req, res) => {
