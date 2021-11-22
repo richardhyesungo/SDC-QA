@@ -3,23 +3,32 @@ const pool = require('../db/index');
 // questions
 const getTenQuestions = `SELECT * FROM questions LIMIT 10`;
 
+const productQuestions = ({ product_id, page = 1, count = 5 }) => {
+  let query = {
+    name: 'get-questions',
+    text: `SELECT * FROM questions WHERE product_id=$1`,
+    values: [product_id],
+  };
+  return pool.query(query);
+};
+
 const test = pool.query(getTenQuestions);
 
-test.then((data) => console.log('data here 🎃', data.rows));
+// test.then((data) => console.log('data here 🎃', data.rows));
 
 // answers
 const getTenAnswers = `SELECT * FROM answers LIMIT 10`;
 
 const test2 = pool.query(getTenAnswers);
 
-test2.then((data) => console.log('answers ⛰', data.rows));
+// test2.then((data) => console.log('answers ⛰', data.rows));
 
 // answers_photos
 const getTenPhotos = `SELECT * FROM answers_photos LIMIT 10`;
 
 const test3 = pool.query(getTenPhotos);
 
-test3.then((data) => console.log('photos ⛽️', data.rows));
+// test3.then((data) => console.log('photos ⛽️', data.rows));
 
 // const getTenQuestions = `SELECT * FROM questions LIMIT 10`;
 
@@ -49,4 +58,4 @@ test3.then((data) => console.log('photos ⛽️', data.rows));
 //   }
 // ); */
 
-module.exports = test;
+module.exports = { test, productQuestions };

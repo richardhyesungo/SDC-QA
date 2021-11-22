@@ -1,24 +1,27 @@
 const express = require('express');
-const test = require('./models/index');
+const { test, productQuestions } = require('./models/index');
 
 const app = express();
 const port = 5001;
 
 app.get('/', (req, res) => {
   // console.log('tessttttt', test);
-  // res.send('hello');
-  test
-    .then((data) => {
-      res.send(data.rows);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  console.log('params', req.query);
+  productQuestions(req.query).then((data) => console.log(data.rows));
+  res.send('hello');
+  // test
+  //   .then((data) => {
+  //     res.send(data.rows);
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
 });
 
 // questions
 app.get('/qa/questions', (req, res) => {
   res.send('hello!');
+  req.query;
   res.sendStatus(200);
 });
 
