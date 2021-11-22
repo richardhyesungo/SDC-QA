@@ -28,8 +28,8 @@ const test = pool.query(getTenQuestions);
 
 const getTenAnswers = `SELECT * FROM answers LIMIT 10`;
 
-const productQuestionAnswers = ({ question_id, page = 1, count = 5 }) => {
-  console.log(question_id);
+const productQuestionAnswers = (question_id, page = 1, count = 5) => {
+  // console.log('question id in models', question_id);
   let query = {
     name: 'get-question-answers',
     text: `SELECT * FROM answers WHERE question_id=$1`,

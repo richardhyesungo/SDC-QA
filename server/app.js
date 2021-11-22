@@ -15,7 +15,46 @@ app.get('/', (req, res) => {
 
 // questions
 app.get('/qa/questions', (req, res) => {
-  productQuestions(req.query).then((data) => res.send(data.rows));
+  let responseData = {};
+
+  const getAllQuestions = () => {
+    return Promise.all([
+      productQuestions(req.query)
+        .then((questions) => {
+          responseData.questions = questions.rows;
+        })
+        .then(() => {
+          return Promise.all(
+            responseData.questions.map((question, photoIdx) => {
+              return productQuestionAnswers(question.id)
+                .then(async (answers) => {
+                  responseData.questions[photoIdx].answers = await answers.rows;
+                })
+                .then(() => {
+                  return Promise.all(
+                    responseData.questions[photoIdx].answers.map(
+                      (answer, answerIdx) => {
+                        return productQuestionAnswersPhotos(answer.id).then(
+                          (photos) => {
+                            responseData.questions[photoIdx].answers[
+                              answerIdx
+                            ].photos = photos.rows;
+                          }
+                        );
+                      }
+                    )
+                  );
+                });
+            })
+          );
+        }),
+    ]);
+  };
+
+  getAllQuestions().then(() => {
+    console.log('response data', responseData);
+    res.send(responseData);
+  });
 });
 
 app.post('/qa/questions', (req, res) => {
@@ -25,7 +64,7 @@ app.post('/qa/questions', (req, res) => {
 // answers
 app.get('/qa/questions/:question_id/answers', (req, res) => {
   let responseData = {};
-  productQuestionAnswers(req.params)
+  productQuestionAnswers(req.params.question_id)
     .then((answers) => {
       responseData.answers = answers.rows;
     })
