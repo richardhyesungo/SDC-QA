@@ -5,7 +5,17 @@ const pool = require('../db/index');
   questions table queries
 
 */
-const getTenQuestions = `SELECT * FROM questions LIMIT 10`;
+const getTenQuestionsJSON = `SELECT row_to_json(questions) FROM questions LIMIT 10`;
+const test = pool.query(getTenQuestionsJSON);
+// test.then((data) => console.log('data here 🎃', data.rows));
+
+// const getTenQuestions = `SELECT * FROM questions LIMIT 10`;
+// const testNotJSON = pool.query(getTenQuestions);
+// testNotJSON.then((data) => console.log('not json data', data.rows));
+
+const getQuestionsAnswersJoinTestQuery = `explain analyze SELECT * FROM questions where product_id=39334 LIMIT 10 `;
+const testJoin = pool.query(getQuestionsAnswersJoinTestQuery);
+testJoin.then((data) => console.log('test join', data.rows));
 
 const productQuestions = ({ product_id, page = 1, count = 5 }) => {
   let query = {
@@ -15,10 +25,6 @@ const productQuestions = ({ product_id, page = 1, count = 5 }) => {
   };
   return pool.query(query);
 };
-
-const test = pool.query(getTenQuestions);
-
-// test.then((data) => console.log('data here 🎃', data.rows));
 
 /*
 

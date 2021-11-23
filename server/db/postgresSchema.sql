@@ -11,6 +11,7 @@
 
 
 -- ALTER TABLE questions ADD CONSTRAINT questions_pkey PRIMARY KEY (id);
+-- CREATE INDEX product_id_index ON questions(product_id);
 
 -- CREATE TABLE IF NOT EXISTS answers (
 --   id BIGSERIAL,
@@ -25,6 +26,7 @@
 
 
 -- ALTER TABLE answers ADD CONSTRAINT answers_pkey PRIMARY KEY (id);
+-- CREATE INDEX question_id_index ON answers(question_id);
 
 -- CREATE TABLE IF NOT EXISTS photos (
 --   id BIGSERIAL,
@@ -34,6 +36,7 @@
 
 
 -- ALTER TABLE photos ADD CONSTRAINT photos_pkey PRIMARY KEY (id);
+-- CREATE INDEX answer_id_index ON answers_photos(answer_id);
 
 -- ALTER TABLE answers ADD CONSTRAINT answers_question_id_fkey FOREIGN KEY (question_id) REFERENCES questions(id);
 -- ALTER TABLE photos ADD CONSTRAINT photos_id_fkey FOREIGN KEY (id) REFERENCES answers(id);
