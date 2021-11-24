@@ -31,20 +31,21 @@ app.get('/qa/questions', (req, res) => {
         })
         .then(() => {
           return Promise.all(
-            responseData.questions.map((question, photoIdx) => {
-              return productQuestionAnswers(question.id)
+            responseData.results.map((question, questionIdx) => {
+              return productQuestionAnswers(question.question_id)
                 .then(async (answers) => {
                   // add answer array for each question
-                  responseData.questions[photoIdx].answers = await answers.rows;
+                  responseData.results[questionIdx].answers =
+                    await answers.rows;
                 })
                 .then(() => {
                   return Promise.all(
-                    responseData.questions[photoIdx].answers.map(
+                    responseData.results[questionIdx].answers.map(
                       (answer, answerIdx) => {
                         return productQuestionAnswersPhotos(answer.id).then(
                           (photos) => {
                             // add photo array for each answer
-                            responseData.questions[photoIdx].answers[
+                            responseData.results[questionIdx].answers[
                               answerIdx
                             ].photos = photos.rows;
                           }
@@ -86,7 +87,6 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
           });
         })
       ).then(() => {
-        console.log('promise all console log', responseData);
         res.send(responseData);
       });
     });
