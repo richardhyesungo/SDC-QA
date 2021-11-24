@@ -1,9 +1,12 @@
 const express = require('express');
 const {
-  test,
   productQuestions,
   productQuestionAnswers,
   productQuestionAnswersPhotos,
+  markQuestionAsHelpful,
+  markAnswerAsHelpful,
+  reportQuestion,
+  reportAnswer,
 } = require('./models/index');
 
 const app = express();
@@ -13,21 +16,25 @@ app.get('/', (req, res) => {
   res.send('hello');
 });
 
-// questions
+// get all questions for a product_id
 app.get('/qa/questions', (req, res) => {
   let responseData = {};
 
   const getAllQuestions = () => {
     return Promise.all([
+      // query product_id for all its questions
       productQuestions(req.query)
         .then((questions) => {
-          responseData.questions = questions.rows;
+          // assign questions property to responseData with query data rows
+          responseData.product_id = req.query.product_id;
+          responseData.results = questions.rows;
         })
         .then(() => {
           return Promise.all(
             responseData.questions.map((question, photoIdx) => {
               return productQuestionAnswers(question.id)
                 .then(async (answers) => {
+                  // add answer array for each question
                   responseData.questions[photoIdx].answers = await answers.rows;
                 })
                 .then(() => {
@@ -36,6 +43,7 @@ app.get('/qa/questions', (req, res) => {
                       (answer, answerIdx) => {
                         return productQuestionAnswersPhotos(answer.id).then(
                           (photos) => {
+                            // add photo array for each answer
                             responseData.questions[photoIdx].answers[
                               answerIdx
                             ].photos = photos.rows;
@@ -52,26 +60,28 @@ app.get('/qa/questions', (req, res) => {
   };
 
   getAllQuestions().then(() => {
-    console.log('response data', responseData);
     res.send(responseData);
   });
 });
 
+// add question for a product_id
 app.post('/qa/questions', (req, res) => {
   res.sendStatus(200);
 });
 
-// answers
+// get all answers for a question_id
 app.get('/qa/questions/:question_id/answers', (req, res) => {
   let responseData = {};
   productQuestionAnswers(req.params.question_id)
     .then((answers) => {
+      // assign answer array results for the question
       responseData.answers = answers.rows;
     })
     .then(() => {
       Promise.all(
         responseData.answers.map((answer, idx) => {
           return productQuestionAnswersPhotos(answer.id).then((photos) => {
+            // add photos array for each answer
             responseData.answers[idx].photos = photos.rows;
           });
         })
@@ -82,28 +92,33 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
     });
 });
 
+// add answer to a question
 app.post('/qa/questions/:question_id/answers', (req, res) => {
   res.sendStatus(200);
 });
 
 // mark question helpful
 app.put('/qa/questions/:question_id/helpful', (req, res) => {
-  res.sendStatus(200);
+  markQuestionAsHelpful(req.params.question_id);
+  res.sendStatus(204);
 });
 
 // report a question
 app.put('/qa/questions/:question_id/report', (req, res) => {
-  res.sendStatus(200);
+  reportQuestion(req.params.question_id);
+  res.sendStatus(204);
 });
 
-// mark question as helpful
+// mark answer as helpful
 app.put('/qa/answers/:answer_id/helpful', (req, res) => {
-  res.sendStatus(200);
+  markAnswerAsHelpful(req.params.answer_id);
+  res.sendStatus(204);
 });
 
 // report answer
 app.put('/qa/answers/:answer_id/report', (req, res) => {
-  res.sendStatus(200);
+  reportAnswer(req.params.answer_id);
+  res.sendStatus(204);
 });
 
 app.listen(port, () => {

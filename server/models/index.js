@@ -2,23 +2,13 @@ const pool = require('../db/index');
 
 /*
 
-  questions table queries
+        QUESTIONS TABLE QUERIES
 
 */
-const getTenQuestionsJSON = `SELECT row_to_json(questions) FROM questions LIMIT 10`;
-const test = pool.query(getTenQuestionsJSON);
-// test.then((data) => console.log('data here 🎃', data.rows));
 
-// const getTenQuestions = `SELECT * FROM questions LIMIT 10`;
-// const testNotJSON = pool.query(getTenQuestions);
-// testNotJSON.then((data) => console.log('not json data', data.rows));
-
-const getQuestionsAnswersJoinTestQuery = `explain analyze SELECT * FROM questions where product_id=39334 LIMIT 10 `;
-const testJoin = pool.query(getQuestionsAnswersJoinTestQuery);
-testJoin.then((data) => console.log('test join', data.rows));
-
+// query to get all questions related to product_id
 const productQuestions = ({ product_id, page = 1, count = 5 }) => {
-  let query = {
+  const query = {
     name: 'get-questions',
     text: `SELECT * FROM questions WHERE product_id=$1`,
     values: [product_id],
@@ -28,15 +18,14 @@ const productQuestions = ({ product_id, page = 1, count = 5 }) => {
 
 /*
 
-  answers table queries
+        answers table queries
 
 */
 
-const getTenAnswers = `SELECT * FROM answers LIMIT 10`;
-
+// query to get all answers related to question
 const productQuestionAnswers = (question_id, page = 1, count = 5) => {
   // console.log('question id in models', question_id);
-  let query = {
+  const query = {
     name: 'get-question-answers',
     text: `SELECT * FROM answers WHERE question_id=$1`,
     values: [question_id],
@@ -44,23 +33,96 @@ const productQuestionAnswers = (question_id, page = 1, count = 5) => {
   return pool.query(query);
 };
 
-const test2 = pool.query(getTenAnswers);
-
-// test2.then((data) => console.log('answers ⛰', data.rows));
-
-// answers_photos
-const getTenPhotos = `SELECT * FROM answers_photos LIMIT 10`;
-
-const test3 = pool.query(getTenPhotos);
-
+// query to get all photos associated with an answer
 const productQuestionAnswersPhotos = (answer_id) => {
-  let query = {
+  const query = {
     name: 'get-question-answers_photos',
     text: `SELECT * FROM answers_photos WHERE answer_id=$1`,
     values: [answer_id],
   };
   return pool.query(query);
 };
+
+/*
+
+        UPDATE QUERIES
+
+*/
+// questions and answers tables -> helpful and reported -> increment and decrement
+const markQuestionAsHelpful = (question_id) => {
+  const query = {
+    name: '',
+    text: `UPDATE questions SET helpful = helpful + 1 where question_id = $1`,
+    values: [question_id],
+  };
+  pool.query(query);
+};
+
+const reportQuestion = (question_id) => {
+  const query = {
+    name: '',
+    text: `UPDATE questions SET reported = reported + 1 where question_id = $1`,
+    values: [question_id],
+  };
+  pool.query(query);
+};
+
+const markAnswerAsHelpful = (id) => {
+  const query = {
+    name: '',
+    text: `UPDATE answers SET helpful = helpful + 1 where id = $1`,
+    values: [id],
+  };
+  pool.query(query);
+};
+
+const reportAnswer = (id) => {
+  const query = {
+    name: '',
+    text: `UPDATE answers SET reported = reported + 1 where id = $1`,
+    values: [id],
+  };
+  pool.query(query);
+};
+
+module.exports = {
+  productQuestions,
+  productQuestionAnswers,
+  productQuestionAnswersPhotos,
+  markQuestionAsHelpful,
+  markAnswerAsHelpful,
+  reportQuestion,
+  reportAnswer,
+};
+
+/*
+
+    test queries TODO: DELETE ME
+
+*/
+
+// const getQuestionsAnswersJoinTestQuery = `explain analyze SELECT * FROM questions where product_id=39334 LIMIT 10 `;
+// const testJoin = pool.query(getQuestionsAnswersJoinTestQuery);
+// testJoin.then((data) => console.log('test join', data.rows));
+
+// const getTenQuestionsJSON = `SELECT row_to_json(questions) FROM questions LIMIT 10`;
+// const test = pool.query(getTenQuestionsJSON);
+// test.then((data) => console.log('data here 🎃', data.rows));
+
+// const getTenQuestions = `SELECT * FROM questions LIMIT 10`;
+// const testNotJSON = pool.query(getTenQuestions);
+// testNotJSON.then((data) => console.log('not json data', data.rows));
+
+// const test2 = pool.query(getTenAnswers);
+
+// test2.then((data) => console.log('answers ⛰', data.rows));
+
+// answers_photos
+// const getTenPhotos = `SELECT * FROM answers_photos LIMIT 10`;
+
+// const test3 = pool.query(getTenPhotos);
+
+// const getTenAnswers = `SELECT * FROM answers LIMIT 10`;
 
 // test3.then((data) => console.log('photos ⛽️', data.rows));
 
@@ -91,10 +153,3 @@ const productQuestionAnswersPhotos = (answer_id) => {
 //     }
 //   }
 // ); */
-
-module.exports = {
-  test,
-  productQuestions,
-  productQuestionAnswers,
-  productQuestionAnswersPhotos,
-};
