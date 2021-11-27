@@ -61,7 +61,10 @@ app.get('/qa/questions', (req, res) => {
 
 // add question for a product_id
 app.post('/qa/questions', (req, res) => {
-  addProductQuestion(req.body)
+  const date = new Date();
+  const questionDate =
+    date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+  addProductQuestion(req.body, questionDate)
     .then((response) => {
       res.status(201).send('CREATED');
     })

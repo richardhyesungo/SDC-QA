@@ -46,13 +46,19 @@ const getProductQuestions = ({ product_id, page = 1, count = 5 }) => {
 };
 
 // add a question
-const addProductQuestion = ({ body, name, email, product_id }) => {
+const addProductQuestion = (
+  { body, name, email, product_id },
+  questionDate
+) => {
   const query = {
     name: 'add-question',
     text: `
-    insert into questions(product_id, question_body, asker_name, asker_email) values($1, $2, $3, $4);
+      insert into questions(
+        product_id, question_body, asker_name, asker_email, question_date, reported, helpful
+        )
+      values($1, $2, $3, $4, $5, 0, 0);
       `,
-    values: [product_id, body, name, email],
+    values: [product_id, body, name, email, questionDate],
   };
   return pool.query(query);
 };
