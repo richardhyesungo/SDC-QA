@@ -3,29 +3,37 @@ version: '3' # version of the docker compose to use. 3 is latest version of API
 services: # web app has 3 services, each needs an image tag
   # service 2
   server:
-    image: server # taken from docker build -t "server" ./server/
+    image: node:latest # taken from docker build -t "server" ./server/
+    # command: node ./server/app.js
     ports: # port access needed in order to communicate with the other services
       - '5001:5001'
-    networks: # allows the service to talk to one another while providing isolation from other docker containers that happen to be running on the same host
-      - sdc-qa # talks to other services via line 27 mern-app
+    # networks: # allows the service to talk to one another while providing isolation from other docker containers that happen to be running on the same host
+    #   - sdc-qa # talks to other services via line 27 mern-app
+    depends_on:
+      - postgres
+    build:
+      context: .
+      dockerfile: ./Dockerfile
   postgres:
     image: postgres:latest # publicly available mongodb image from dockerhub
     restart: always
     ports: # port access needed in order to communicate with the other services
       - '5432:5432'
     environment:
-      POSTGRES_DB: qa
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
-    networks: # allows the service to talk to one another while providing isolation from other docker containers that happen to be running on the same host
-      - sdc-qa # talks to other services via line 27 mern-app
-    volumes:
-      - /usr/local/var/postgres:/data/dbbbb # 2nd half after : is the folder structure
-      - ./postgresSchema.sql:/docker-entrypoint-initdb.d/init.sql
+    # networks: # allows the service to talk to one another while providing isolation from other docker containers that happen to be running on the same host
+    #   - sdc-qa # talks to other services via line 27 mern-app
+    expose:
+      - '5432'
+    # volumes:
+    #   - /usr/local/var/postgres:/data/dbbbb # 2nd half after : is the folder structure
+    #   - ./postgresSchema.sql:/docker-entrypoint-initdb.d/init.sql
 
-networks:
-  sdc-qa: # uses the default driver
-    driver: bridge # is bridge the default driver?
+# networks:
+#   sdc-qa: # uses the default driver
+#     driver: bridge # is bridge the default driver?
 
 volumes: # docker volume to enable persistence of the database data across container restarts
   postgres: #mounted into the mongodb container at the proper path where mongo is expecting to store the data

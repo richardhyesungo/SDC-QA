@@ -10,7 +10,36 @@ const pool = require('../db/index');
 const productQuestions = ({ product_id, page = 1, count = 5 }) => {
   const query = {
     name: 'get-questions',
-    text: `SELECT * FROM questions WHERE product_id=$1`,
+    text: `
+      select
+          q.question_id,
+          q.question_body,
+          q.question_date,
+          q.asker_name,
+          q.helpful as question_helpfulness,
+          case when q.reported > 0 then true else false end as reported,
+          jsonb_object_agg(
+                a.id,
+                json_build_object(
+                  'id', a.id,
+                  'body', a.body,
+                  'date', a.date_written,
+                  'answerer_name', a.answerer_name,
+                  'helpfulness', a.helpful,
+                  'photos', (
+                    select ARRAY(
+                      SELECT row_to_json(ap)
+                      from answers_photos as ap
+                      where ap.answer_id = a.id
+                      )
+                    )
+                  )
+          ) as answers
+      from answers as a
+      inner join questions as q
+      on q.question_id = a.question_id
+      where q.product_id=$1
+      group by 1;`,
     values: [product_id],
   };
   return pool.query(query);
@@ -27,7 +56,9 @@ const productQuestionAnswers = (question_id, page = 1, count = 5) => {
   // console.log('question id in models', question_id);
   const query = {
     name: 'get-question-answers',
-    text: `SELECT * FROM answers WHERE question_id=$1`,
+    text: `SELECT row_to_json (sub)
+          FROM (SELECT id, body, date_written as date, answerer_name,
+          helpful as helpfulness FROM answers WHERE question_id=$1) as sub`,
     values: [question_id],
   };
   return pool.query(query);
@@ -37,7 +68,7 @@ const productQuestionAnswers = (question_id, page = 1, count = 5) => {
 const productQuestionAnswersPhotos = (answer_id) => {
   const query = {
     name: 'get-question-answers_photos',
-    text: `SELECT * FROM answers_photos WHERE answer_id=$1`,
+    text: `SELECT id, url FROM answers_photos WHERE answer_id=$1`,
     values: [answer_id],
   };
   return pool.query(query);

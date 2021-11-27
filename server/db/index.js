@@ -2,12 +2,26 @@ const { Pool, Client } = require('pg');
 const fs = require('fs');
 const path = require('path');
 const fastcsv = require('fast-csv');
-const dbConfig = require('../config.js');
+const dbConfig = require('../../config.js');
 
+// for docker
+// const pool = new Pool({
+//   user: 'postgres',
+//   host: 'postgres',
+//   database: 'postgres',
+//   password: 'password',
+//   port: 5432,
+// });
+
+// for local host development
 const pool = new Pool({
   user: 'richardo',
+  host: 'localhost',
   database: 'qa',
-  port: 5432,
+});
+
+pool.on('connect', () => {
+  console.log('connected to db');
 });
 
 // const query =

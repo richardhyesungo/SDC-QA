@@ -12,6 +12,8 @@
 
 -- ALTER TABLE questions ADD CONSTRAINT questions_pkey PRIMARY KEY (id);
 -- CREATE INDEX product_id_index ON questions(product_id);
+-- alter table questions rename column body to question_body;
+-- alter table questions rename column date_written to question_date;
 
 -- CREATE TABLE IF NOT EXISTS answers (
 --   id BIGSERIAL,
@@ -41,7 +43,7 @@
 -- ALTER TABLE answers ADD CONSTRAINT answers_question_id_fkey FOREIGN KEY (question_id) REFERENCES questions(id);
 -- ALTER TABLE photos ADD CONSTRAINT photos_id_fkey FOREIGN KEY (id) REFERENCES answers(id);
 
-CREATE TABLE IF NOT EXISTS test (
+CREATE TABLE IF NOT EXISTS test2 (
   id BIGSERIAL,
   product_id INTEGER,
   body VARCHAR(1000),

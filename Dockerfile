@@ -1,4 +1,4 @@
-FROM node:14-slim
+FROM node:latest
 
 WORKDIR /usr/server
 
@@ -11,4 +11,4 @@ COPY . .
 
 EXPOSE 5001
 
-CMD [ "app.js" ]
+CMD [ "node", "server/app.js" ]
