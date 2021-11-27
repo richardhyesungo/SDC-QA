@@ -7,7 +7,7 @@ const pool = require('../db/index');
 */
 
 // query to get all questions related to product_id
-const productQuestions = ({ product_id, page = 1, count = 5 }) => {
+const getProductQuestions = ({ product_id, page = 1, count = 5 }) => {
   const query = {
     name: 'get-questions',
     text: `
@@ -28,7 +28,7 @@ const productQuestions = ({ product_id, page = 1, count = 5 }) => {
                   'helpfulness', a.helpful,
                   'photos', (
                     select ARRAY(
-                      SELECT row_to_json(ap)
+                      SELECT json_build_object('id', ap.id, 'url', ap.url)
                       from answers_photos as ap
                       where ap.answer_id = a.id
                       )
@@ -45,6 +45,18 @@ const productQuestions = ({ product_id, page = 1, count = 5 }) => {
   return pool.query(query);
 };
 
+// add a question
+const addProductQuestion = ({ body, name, email, product_id }) => {
+  const query = {
+    name: 'add-question',
+    text: `
+    insert into questions(product_id, question_body, asker_name, asker_email) values($1, $2, $3, $4);
+      `,
+    values: [product_id, body, name, email],
+  };
+  return pool.query(query);
+};
+
 /*
 
         answers table queries
@@ -53,23 +65,26 @@ const productQuestions = ({ product_id, page = 1, count = 5 }) => {
 
 // query to get all answers related to question
 const productQuestionAnswers = (question_id, page = 1, count = 5) => {
-  // console.log('question id in models', question_id);
   const query = {
     name: 'get-question-answers',
-    text: `SELECT row_to_json (sub)
-          FROM (SELECT id, body, date_written as date, answerer_name,
-          helpful as helpfulness FROM answers WHERE question_id=$1) as sub`,
+    text: `
+        select
+            a.id as answer_id,
+            a.body,
+            a.date_written as date,
+            a.answerer_name,
+            a.helpful as helpfulness,
+            (
+              select ARRAY(
+                SELECT json_build_object('id', ap.id, 'url', ap.url)
+                from answers_photos as ap
+                where ap.answer_id = a.id
+                )
+            ) as photos
+        from answers as a
+        where a.question_id = $1;
+    `,
     values: [question_id],
-  };
-  return pool.query(query);
-};
-
-// query to get all photos associated with an answer
-const productQuestionAnswersPhotos = (answer_id) => {
-  const query = {
-    name: 'get-question-answers_photos',
-    text: `SELECT id, url FROM answers_photos WHERE answer_id=$1`,
-    values: [answer_id],
   };
   return pool.query(query);
 };
@@ -117,13 +132,13 @@ const reportAnswer = (id) => {
 };
 
 module.exports = {
-  productQuestions,
+  addProductQuestion,
   productQuestionAnswers,
-  productQuestionAnswersPhotos,
   markQuestionAsHelpful,
   markAnswerAsHelpful,
   reportQuestion,
   reportAnswer,
+  getProductQuestions,
 };
 
 /*

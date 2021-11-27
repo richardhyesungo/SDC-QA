@@ -1,16 +1,31 @@
+const pool = require('./db/index.js');
 const express = require('express');
+const app = express();
+const port = 5001;
+
+// import db model functions that return pool promises. Use like so: exampleFunction().then().catch()
 const {
-  productQuestions,
+  getProductQuestions,
   productQuestionAnswers,
-  productQuestionAnswersPhotos,
   markQuestionAsHelpful,
   markAnswerAsHelpful,
   reportQuestion,
   reportAnswer,
+  addProductQuestion,
 } = require('./models/index');
 
-const pool = require('./db/index.js');
+// middleware
+app.use(function (req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
+app.use(express.json());
+app.use(require('body-parser').urlencoded({ extended: false }));
 
+// TODO: delete me. Used to test docker db container table creation
 const addTable = () => {
   console.log('adding table');
   const query = {
@@ -31,102 +46,48 @@ const addTable = () => {
 // addTable().then((something) => console.log(something));
 // getting error
 
-const app = express();
-const port = 5001;
-
 app.get('/', (req, res) => {
   res.send('hello');
 });
 
 // get all questions for a product_id
 app.get('/qa/questions', (req, res) => {
-  console.log(req.query.product_id);
   let responseObject = { product_id: req.query.product_id };
-  productQuestions(req.query).then(
-    (data) => {
-      responseObject.results = data.rows;
-      res.send(responseObject);
-    }
-    // console.log('printing', data.rows)
-  );
-  // let responseData = {};
-
-  // const getAllQuestions = () => {
-  //   return Promise.all([
-  //     // query product_id for all its questions
-  //     productQuestions(req.query)
-  //       .then((questions) => {
-  //         // assign questions property to responseData with query data rows
-  //         responseData.product_id = req.query.product_id;
-  //         responseData.results = questions.rows;
-  //       })
-  //       .then(() => {
-  //         return Promise.all(
-  //           responseData.results.map((question, questionIdx) => {
-  //             return productQuestionAnswers(question.question_id)
-  //               .then(async (answers) => {
-  //                 // add answer array for each question
-  //                 console.log('answers should be json', answers);
-  //                 responseData.results[questionIdx].answers =
-  //                   await answers.rows;
-  //                 // await answers.rows;
-  //               })
-  //               .then(() => {
-  //                 return Promise.all(
-  //                   responseData.results[questionIdx].answers.map(
-  //                     (answer, answerIdx) => {
-  //                       return productQuestionAnswersPhotos(answer.id).then(
-  //                         (photos) => {
-  //                           // add photo array for each answer
-  //                           responseData.results[questionIdx].answers[
-  //                             answerIdx
-  //                           ].photos = photos.rows;
-  //                         }
-  //                       );
-  //                     }
-  //                   )
-  //                 );
-  //               });
-  //           })
-  //         );
-  //       }),
-  //   ]);
-  // };
-
-  // getAllQuestions().then(() => {
-  //   res.send(responseData);
-  // });
+  getProductQuestions(req.query).then((data) => {
+    responseObject.results = data.rows;
+    res.send(responseObject);
+  });
 });
 
 // add question for a product_id
 app.post('/qa/questions', (req, res) => {
-  res.sendStatus(200);
+  addProductQuestion(req.body)
+    .then((response) => {
+      res.status(201).send('CREATED');
+    })
+    .catch((err) => {
+      console.log('error');
+    });
 });
 
 // get all answers for a question_id
 app.get('/qa/questions/:question_id/answers', (req, res) => {
-  let responseData = {};
-  productQuestionAnswers(req.params.question_id)
-    .then((answers) => {
-      // assign answer array results for the question
-      responseData.answers = answers.rows;
-    })
-    .then(() => {
-      Promise.all(
-        responseData.answers.map((answer, idx) => {
-          return productQuestionAnswersPhotos(answer.id).then((photos) => {
-            // add photos array for each answer
-            responseData.answers[idx].photos = photos.rows;
-          });
-        })
-      ).then(() => {
-        res.send(responseData);
-      });
-    });
+  let responseData = {
+    question: req.params.question_id,
+    page: req.params.page || 1,
+    count: req.params.count || 5,
+  };
+  productQuestionAnswers(req.params.question_id).then((data) => {
+    console.log(data.rows);
+    responseData.results = data.rows;
+    res.send(responseData);
+  });
 });
 
 // add answer to a question
 app.post('/qa/questions/:question_id/answers', (req, res) => {
+  // body, name, email, product_id
+
   res.sendStatus(200);
 });
 
