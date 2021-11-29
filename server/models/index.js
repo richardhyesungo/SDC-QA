@@ -56,9 +56,9 @@ const addProductQuestion = (
       insert into questions(
         product_id, question_body, asker_name, asker_email, question_date, reported, helpful
         )
-      values($1, $2, $3, $4, $5, 0, 0);
+      values($1, $2, $3, $4, $5, $6, $7);
       `,
-    values: [product_id, body, name, email, questionDate],
+    values: [product_id, body, name, email, questionDate, 0, 0],
   };
   return pool.query(query);
 };
@@ -94,6 +94,32 @@ const productQuestionAnswers = (question_id, page = 1, count = 5) => {
   };
   return pool.query(query);
 };
+
+// add an answer
+const addQuestionAnswer = ({ body, name, email, question_id }, answerDate) => {
+  const query = {
+    name: 'add-answer',
+    text: `
+      insert into answers(
+        question_id, body, answerer_name, answerer_email, date_written, reported, helpful
+        )
+      values($1, $2, $3, $4, $5, $6, $7);
+      `,
+    values: [question_id, body, name, email, answerDate, 0, 0],
+  };
+  return pool.query(query);
+};
+
+/*
+--   id BIGSERIAL,
+--   question_id INTEGER,
+--   body VARCHAR(1000),
+--   date_written DATE,
+--   answerer_name VARCHAR(100),
+--   answerer_email VARCHAR(100),
+--   reported INTEGER,
+--   helpful INTEGER
+*/
 
 /*
 
@@ -145,6 +171,7 @@ module.exports = {
   reportQuestion,
   reportAnswer,
   getProductQuestions,
+  addQuestionAnswer,
 };
 
 /*

@@ -12,6 +12,7 @@ const {
   reportQuestion,
   reportAnswer,
   addProductQuestion,
+  addQuestionAnswer,
 } = require('./models/index');
 
 // middleware
@@ -25,26 +26,30 @@ app.use(function (req, res, next) {
 app.use(express.json());
 app.use(require('body-parser').urlencoded({ extended: false }));
 
-// TODO: delete me. Used to test docker db container table creation
-const addTable = () => {
-  console.log('adding table');
-  const query = {
-    name: 'add-table',
-    text: `CREATE TABLE IF NOT EXISTS test3 (
-      id BIGSERIAL,
-      product_id INTEGER,
-      body VARCHAR(1000),
-      date_written DATE,
-      asker_name VARCHAR(100),
-      asker_email VARCHAR(100),
-      reported INTEGER,
-      helpful INTEGER
-    );`,
+/*
+
+  TODO: delete me. Used to test docker db container table creation
+  const addTable = () => {
+    console.log('adding table');
+    const query = {
+      name: 'add-table',
+      text: `CREATE TABLE IF NOT EXISTS test3 (
+        id BIGSERIAL,
+        product_id INTEGER,
+        body VARCHAR(1000),
+        date_written DATE,
+        asker_name VARCHAR(100),
+        asker_email VARCHAR(100),
+        reported INTEGER,
+        helpful INTEGER
+      );`,
+    };
+    return pool.query(query);
   };
-  return pool.query(query);
-};
-// addTable().then((something) => console.log(something));
-// getting error
+  // addTable().then((something) => console.log(something));
+  // getting error
+
+*/
 
 app.get('/', (req, res) => {
   res.send('hello');
@@ -89,9 +94,19 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
 
 // add answer to a question
 app.post('/qa/questions/:question_id/answers', (req, res) => {
-  // body, name, email, product_id
+  const date = new Date();
+  const answerDate =
+    date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+  // console.log(req.body, answerDate);
+  // res.status(200).send('ok');
 
-  res.sendStatus(200);
+  addQuestionAnswer(req.body, answerDate)
+    .then((response) => {
+      res.status(201).send('CREATED');
+    })
+    .catch((err) => {
+      console.log('error', err);
+    });
 });
 
 // mark question helpful
