@@ -86,7 +86,6 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
     count: req.params.count || 5,
   };
   productQuestionAnswers(req.params.question_id).then((data) => {
-    console.log(data.rows);
     responseData.results = data.rows;
     res.send(responseData);
   });
@@ -97,8 +96,6 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
   const date = new Date();
   const answerDate =
     date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-  // console.log(req.body, answerDate);
-  // res.status(200).send('ok');
 
   addQuestionAnswer(req.body, answerDate)
     .then((response) => {
@@ -132,8 +129,6 @@ app.put('/qa/answers/:answer_id/report', (req, res) => {
   reportAnswer(req.params.answer_id);
   res.sendStatus(204);
 });
-
-console.log('test');
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);

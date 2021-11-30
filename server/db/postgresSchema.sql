@@ -43,13 +43,16 @@
 -- ALTER TABLE answers ADD CONSTRAINT answers_question_id_fkey FOREIGN KEY (question_id) REFERENCES questions(id);
 -- ALTER TABLE photos ADD CONSTRAINT photos_id_fkey FOREIGN KEY (id) REFERENCES answers(id);
 
-CREATE TABLE IF NOT EXISTS test2 (
-  id BIGSERIAL,
-  product_id INTEGER,
-  body VARCHAR(1000),
-  date_written DATE,
-  asker_name VARCHAR(100),
-  asker_email VARCHAR(100),
-  reported INTEGER,
-  helpful INTEGER
-);
+
+
+
+-- CREATE TABLE IF NOT EXISTS test2 (
+--   id BIGSERIAL,
+--   product_id INTEGER,
+--   body VARCHAR(1000),
+--   date_written DATE,
+--   asker_name VARCHAR(100),
+--   asker_email VARCHAR(100),
+--   reported INTEGER,
+--   helpful INTEGER
+-- );

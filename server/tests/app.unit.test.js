@@ -1,5 +1,7 @@
 const request = require('supertest');
-const app = require('./app.js');
+const app = require('../app.js');
+
+// unit and api endpoint tests
 
 describe('GET /qa/questions', () => {
   describe('test', () => {
@@ -14,7 +16,7 @@ describe('POST /qa/questions', () => {
   describe('test', () => {
     test('should test', async () => {
       const response = await request(app).post('/qa/questions');
-      expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(201);
     });
   });
 });
@@ -41,7 +43,7 @@ describe('PUT /qa/questions/319531/helpful', () => {
   describe('test', () => {
     test('should test', async () => {
       const response = await request(app).put('/qa/questions/319531/helpful');
-      expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(204);
     });
   });
 });
@@ -50,7 +52,7 @@ describe('PUT /qa/questions/319531/report', () => {
   describe('test', () => {
     test('should test', async () => {
       const response = await request(app).put('/qa/questions/319531/report');
-      expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(204);
     });
   });
 });
@@ -59,7 +61,7 @@ describe('PUT /qa/answers/2983211/helpful', () => {
   describe('test', () => {
     test('should test', async () => {
       const response = await request(app).put('/qa/answers/2983211/helpful');
-      expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(204);
     });
   });
 });
@@ -68,7 +70,7 @@ describe('PUT /qa/answers/2983211/report', () => {
   describe('test', () => {
     test('should test', async () => {
       const response = await request(app).put('/qa/answers/2983211/report');
-      expect(response.statusCode).toBe(200);
+      expect(response.statusCode).toBe(204);
     });
   });
 });
