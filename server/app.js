@@ -1,7 +1,7 @@
 const pool = require('./db/index.js');
 const express = require('express');
 const app = express();
-const port = 5001;
+const port = process.env.PORT || 5001;
 
 // import db model functions that return pool promises. Use like so: exampleFunction().then().catch()
 const {
@@ -25,31 +25,6 @@ app.use(function (req, res, next) {
 });
 app.use(express.json());
 app.use(require('body-parser').urlencoded({ extended: false }));
-
-/*
-
-  TODO: delete me. Used to test docker db container table creation
-  const addTable = () => {
-    console.log('adding table');
-    const query = {
-      name: 'add-table',
-      text: `CREATE TABLE IF NOT EXISTS test3 (
-        id BIGSERIAL,
-        product_id INTEGER,
-        body VARCHAR(1000),
-        date_written DATE,
-        asker_name VARCHAR(100),
-        asker_email VARCHAR(100),
-        reported INTEGER,
-        helpful INTEGER
-      );`,
-    };
-    return pool.query(query);
-  };
-  // addTable().then((something) => console.log(something));
-  // getting error
-
-*/
 
 app.get('/', (req, res) => {
   res.send('hello');

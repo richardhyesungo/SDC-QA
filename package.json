@@ -10,7 +10,7 @@
   "scripts": {
     "start": "nodemon server/app.js",
     "test": "jest",
-    "createdb": "psql qa < postgresSchema.sql"
+    "createdb": "psql postgres < server/db/postgresSchema.sql"
   },
   "repository": {
     "type": "git",
