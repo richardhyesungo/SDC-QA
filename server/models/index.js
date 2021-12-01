@@ -111,17 +111,6 @@ const addQuestionAnswer = ({ body, name, email, question_id }, answerDate) => {
 };
 
 /*
---   id BIGSERIAL,
---   question_id INTEGER,
---   body VARCHAR(1000),
---   date_written DATE,
---   answerer_name VARCHAR(100),
---   answerer_email VARCHAR(100),
---   reported INTEGER,
---   helpful INTEGER
-*/
-
-/*
 
         UPDATE QUERIES
 

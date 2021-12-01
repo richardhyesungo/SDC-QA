@@ -37,6 +37,7 @@ ALTER TABLE answers_photos ADD CONSTRAINT photos_id_fkey FOREIGN KEY (id) REFERE
 \COPY answers (id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful) FROM '/data/db/answers.csv' DELIMITER ',' CSV HEADER;
 \COPY answers_photos (id, answer_id, url) FROM '/data/db/answers_photos.csv' DELIMITER ',' CSV HEADER;
 
+ALTER TABLE questions rename column id TO question_id;
 ALTER TABLE questions rename column body TO question_body;
 ALTER TABLE questions rename column date_written TO question_date;
 

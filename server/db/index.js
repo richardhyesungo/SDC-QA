@@ -4,34 +4,13 @@ const path = require('path');
 const fastcsv = require('fast-csv');
 const dbConfig = require('../../config.js');
 
-// for docker
-const pool = new Pool({
-  user: 'postgres',
-  host: 'postgres',
-  database: 'postgres',
-  password: 'password',
-  port: process.env.PORT || 5432,
-});
-
-/* Should I use this instead?
-  const pool = new Pool({
-    user: process.env.POSTGRES_USER,
-    host: 'postgres',
-    database: process.env.POSTGRES_DB,
-    password: process.env.POSTGRES_PASSWORD,
-    port: process.env.PORT || 5432,
-  });
-*/
-// for local host development
-// const pool = new Pool({
-//   user: 'richardo',
-//   host: 'localhost',
-//   database: 'qa',
-// });
+const pool = new Pool(dbConfig);
 
 pool.on('connect', () => {
   console.log('connected to db');
 });
+
+module.exports = pool;
 
 // const query =
 //   'INSERT INTO photos (id, style_id, url, thumbnail_url) VALUES ($1, $2, $3, $4)';
@@ -94,5 +73,3 @@ pool.on('connect', () => {
 //   });
 
 // stream.pipe(csvStream);
-
-module.exports = pool;

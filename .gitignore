@@ -2,3 +2,4 @@ node_modules/
 config.js
 csv_files/
 .env
+sdc.pem
