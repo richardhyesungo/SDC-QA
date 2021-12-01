@@ -1,7 +1,7 @@
 const pool = require('./db/index.js');
 const express = require('express');
 const app = express();
-const port = 5001;
+const port = process.env.PORT || 5001;
 
 // import db model functions that return pool promises. Use like so: exampleFunction().then().catch()
 const {
@@ -25,31 +25,6 @@ app.use(function (req, res, next) {
 });
 app.use(express.json());
 app.use(require('body-parser').urlencoded({ extended: false }));
-
-/*
-
-  TODO: delete me. Used to test docker db container table creation
-  const addTable = () => {
-    console.log('adding table');
-    const query = {
-      name: 'add-table',
-      text: `CREATE TABLE IF NOT EXISTS test3 (
-        id BIGSERIAL,
-        product_id INTEGER,
-        body VARCHAR(1000),
-        date_written DATE,
-        asker_name VARCHAR(100),
-        asker_email VARCHAR(100),
-        reported INTEGER,
-        helpful INTEGER
-      );`,
-    };
-    return pool.query(query);
-  };
-  // addTable().then((something) => console.log(something));
-  // getting error
-
-*/
 
 app.get('/', (req, res) => {
   res.send('hello');
@@ -86,7 +61,6 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
     count: req.params.count || 5,
   };
   productQuestionAnswers(req.params.question_id).then((data) => {
-    console.log(data.rows);
     responseData.results = data.rows;
     res.send(responseData);
   });
@@ -97,8 +71,6 @@ app.post('/qa/questions/:question_id/answers', (req, res) => {
   const date = new Date();
   const answerDate =
     date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-  // console.log(req.body, answerDate);
-  // res.status(200).send('ok');
 
   addQuestionAnswer(req.body, answerDate)
     .then((response) => {
@@ -132,8 +104,6 @@ app.put('/qa/answers/:answer_id/report', (req, res) => {
   reportAnswer(req.params.answer_id);
   res.sendStatus(204);
 });
-
-console.log('test');
 
 app.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);

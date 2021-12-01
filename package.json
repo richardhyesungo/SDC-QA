@@ -3,10 +3,14 @@
   "version": "1.0.0",
   "description": "questions and answers",
   "main": "app.js",
+  "jest": {
+    "verbose": true,
+    "preset": "jest-puppeteer"
+  },
   "scripts": {
     "start": "nodemon server/app.js",
     "test": "jest",
-    "createdb": "psql qa < postgresSchema.sql"
+    "createdb": "psql postgres < server/db/postgresSchema.sql"
   },
   "repository": {
     "type": "git",
@@ -25,7 +29,14 @@
     "pg": "^8.7.1"
   },
   "devDependencies": {
+    "@testing-library/react": "^12.1.2",
+    "chromium": "^3.0.3",
     "jest": "^27.3.1",
+    "jest-puppeteer": "^6.0.2",
+    "puppeteer": "^12.0.1",
+    "puppeteer-core": "^12.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "supertest": "^6.1.3"
   }
 }
