@@ -33,9 +33,9 @@ ALTER TABLE answers_photos ADD CONSTRAINT photos_pkey PRIMARY KEY (id);
 ALTER TABLE answers_photos ADD CONSTRAINT photos_id_fkey FOREIGN KEY (id) REFERENCES answers(id);
 
 -- /* copy csv data into tables */
-\COPY questions (id, product_id, body, date_written, asker_name, asker_email, reported, helpful) FROM '/data/db/questions.csv' DELIMITER ',' CSV HEADER;
-\COPY answers (id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful) FROM '/data/db/answers.csv' DELIMITER ',' CSV HEADER;
-\COPY answers_photos (id, answer_id, url) FROM '/data/db/answers_photos.csv' DELIMITER ',' CSV HEADER;
+\COPY questions (id, product_id, body, date_written, asker_name, asker_email, reported, helpful) FROM '/questions.csv' DELIMITER ',' CSV HEADER;
+\COPY answers (id, question_id, body, date_written, answerer_name, answerer_email, reported, helpful) FROM '/answers.csv' DELIMITER ',' CSV HEADER;
+\COPY answers_photos (id, answer_id, url) FROM '/answers_photos.csv' DELIMITER ',' CSV HEADER;
 
 ALTER TABLE questions rename column id TO question_id;
 ALTER TABLE questions rename column body TO question_body;

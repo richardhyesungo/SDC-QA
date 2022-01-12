@@ -45,7 +45,15 @@ const getProductQuestions = ({ product_id, page = 1, count = 5 }) => {
   return pool.query(query);
 };
 
-// add a question
+const testQuery = () => {
+  const query = {
+    name: 'test',
+    text: `
+      select * from questions limit 1;`,
+  };
+  return pool.query(query);
+};
+
 const addProductQuestion = (
   { body, name, email, product_id },
   questionDate
@@ -161,63 +169,5 @@ module.exports = {
   reportAnswer,
   getProductQuestions,
   addQuestionAnswer,
+  testQuery,
 };
-
-/*
-
-    test queries TODO: DELETE ME
-
-*/
-
-// const getQuestionsAnswersJoinTestQuery = `explain analyze SELECT * FROM questions where product_id=39334 LIMIT 10 `;
-// const testJoin = pool.query(getQuestionsAnswersJoinTestQuery);
-// testJoin.then((data) => console.log('test join', data.rows));
-
-// const getTenQuestionsJSON = `SELECT row_to_json(questions) FROM questions LIMIT 10`;
-// const test = pool.query(getTenQuestionsJSON);
-// test.then((data) => console.log('data here 🎃', data.rows));
-
-// const getTenQuestions = `SELECT * FROM questions LIMIT 10`;
-// const testNotJSON = pool.query(getTenQuestions);
-// testNotJSON.then((data) => console.log('not json data', data.rows));
-
-// const test2 = pool.query(getTenAnswers);
-
-// test2.then((data) => console.log('answers ⛰', data.rows));
-
-// answers_photos
-// const getTenPhotos = `SELECT * FROM answers_photos LIMIT 10`;
-
-// const test3 = pool.query(getTenPhotos);
-
-// const getTenAnswers = `SELECT * FROM answers LIMIT 10`;
-
-// test3.then((data) => console.log('photos ⛽️', data.rows));
-
-// const getTenQuestions = `SELECT * FROM questions LIMIT 10`;
-
-// const test = pool.query(getTenQuestions);
-
-// const questionInsertQuery = `INSERT INTO questions(
-//   id, product_id, body, date_written,
-//   asker_name, asker_email, reported,
-//   helpful) VALUES($1, $2, $3, $4, $5, $6, $7, $8)`;
-
-// /* pool.query(
-//   questionInsertQuery,
-//   [
-//     id,
-//     product_id,
-//     body,
-//     date_written,
-//     asker_name,
-//     asker_email,
-//     reported,
-//     helpful,
-//   ],
-//   (err, res) => {
-//     if (err) {
-//       console.log('🔴🔴🔴🔴🔴🔴🔴🔴', err);
-//     }
-//   }
-// ); */

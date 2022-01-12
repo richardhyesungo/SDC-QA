@@ -2,6 +2,39 @@ const pool = require('./db/index.js');
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 5001;
+const path = require('path');
+
+const redis = require('redis');
+/* const client = redis.createClient({
+  host: 'localhost',
+  port: 6379,
+  password: '',
+}); */
+// const client = redis.createClient();
+const client = redis.createClient({
+  legacyMode: true,
+});
+
+client.connect();
+client.on('connect', () => {
+  console.log('connecting to redis');
+});
+
+client.on('ready', () => {
+  console.log('connected to redis');
+});
+
+client.on('end', () => {
+  console.log('redis connection disconnected');
+});
+
+client.on('reconnecting', () => {
+  console.log('reconnecting to redis');
+});
+
+client.on('error', (err) => {
+  console.log('Error ' + err);
+});
 
 // import db model functions that return pool promises. Use like so: exampleFunction().then().catch()
 const {
@@ -13,6 +46,7 @@ const {
   reportAnswer,
   addProductQuestion,
   addQuestionAnswer,
+  testQuery,
 } = require('./models/index');
 
 // middleware
@@ -27,7 +61,62 @@ app.use(express.json());
 app.use(require('body-parser').urlencoded({ extended: false }));
 
 app.get('/', (req, res) => {
-  res.send('hello');
+  console.log('hit');
+  const searchTerm = 'testing123';
+  try {
+    console.log('trying');
+    console.log('client', client);
+    client.get(searchTerm, async (err, jobs) => {
+      console.log('getting');
+      if (err) throw err;
+
+      if (jobs) {
+        console.log('jobs');
+        res.send(jobs);
+      } else {
+        console.log('no jobs');
+        // const jobs = await axios.get(`https://jobs.github.com/positions.json?search=${searchTerm}`);
+        client.setex(searchTerm, 600, 'helllloooooo');
+        res.send('added');
+      }
+    });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+});
+
+app.get('/test', (req, res) => {
+  console.log('hit');
+  const searchTerm = 'testing456';
+  try {
+    console.log('trying');
+    client.get(searchTerm, async (err, jobs) => {
+      console.log('getting');
+      if (err) throw err;
+
+      if (jobs) {
+        console.log('jobs');
+        res.send(jobs);
+      } else {
+        console.log('no jobs');
+        // const jobs = await axios.get(`https://jobs.github.com/positions.json?search=${searchTerm}`);
+        testQuery()
+          .then((data) => {
+            client.setex(searchTerm, 600, data.rows);
+            res.send('added');
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+    });
+  } catch (err) {
+    res.status(500).send({ message: err.message });
+  }
+});
+
+app.get('/loaderio-8b2ce2e878ae5bbf15659cfbb92c53d8.txt', (req, res) => {
+  res.sendFile(path.join(__dirname, './loaderio.txt'));
 });
 
 // get all questions for a product_id
@@ -44,6 +133,7 @@ app.post('/qa/questions', (req, res) => {
   const date = new Date();
   const questionDate =
     date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+
   addProductQuestion(req.body, questionDate)
     .then((response) => {
       res.status(201).send('CREATED');
@@ -60,6 +150,7 @@ app.get('/qa/questions/:question_id/answers', (req, res) => {
     page: req.params.page || 1,
     count: req.params.count || 5,
   };
+
   productQuestionAnswers(req.params.question_id).then((data) => {
     responseData.results = data.rows;
     res.send(responseData);
