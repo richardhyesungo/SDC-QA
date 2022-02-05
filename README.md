@@ -6,22 +6,22 @@ https://trello.com/b/CyVXyNH7/system-design-capstone
 The backend for a pre-existing retail website.
 
 ### Built/Tested with
-PostgreSQL
-Node
-Express
-Docker
-AWS EC2
-New Relic
-Loader.io
-Redis
+1. PostgreSQL
+2. Node
+3. Express
+4. Docker
+5. AWS EC2
+6. New Relic
+7. Loader.io
+8. Redis
 
 ## Development Process
-Created RESTful API endpoints
-Connected to express server to PostgreSQL database
-Seeded PostgreSQL database with 15 million+ records.
-Tested performance, and created indices on select columns to optimize queries to reduce response time from ~10s (10,000 ms) to around 10ms.
-Implemented Redis cache to reduce calls to the database.
-Deployed the application using a microservice architecture where the server was dockerized if needed for horizontal scaling.
+1. Created RESTful API endpoints
+2. Connected to express server to PostgreSQL database
+3. Seeded PostgreSQL database with 15 million+ records.
+4. Tested performance, and created indices on select columns to optimize queries to reduce response time from ~10s (10,000 ms) to around 10ms.
+5. Implemented Redis cache to reduce calls to the database.
+6. Deployed the application using a microservice architecture where the server was dockerized if needed for horizontal scaling.
 
 ### Running the server locally
 1. Git clone this repo
